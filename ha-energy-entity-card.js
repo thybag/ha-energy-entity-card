@@ -111,6 +111,8 @@ class HaEnergyEntityCard extends LitElement {
   value = null;
   units;
 
+  _needsInit = true;
+
   // Props
   static get properties() {
     return {
@@ -122,10 +124,17 @@ class HaEnergyEntityCard extends LitElement {
   // On connect setup listener & default values
   connectedCallback() {
     super.connectedCallback();
+  }
 
+  init() {
+    // HA not ready yet, wait until next render loop
+    if (!this.hass){
+      return;
+    }
+
+    // Bad entity?
     if (!this.hass.states[this.config.entityId]) {
       this.value = `Unkown enitity "${this.config.entityId}"`;
-      console.error(this.value);
       return;
     }
 
@@ -138,6 +147,9 @@ class HaEnergyEntityCard extends LitElement {
     this.dateRange.onDateRangeChange((c) => {
       this.loadData(c.start, c.end);
     });
+
+    // Don't init again
+    this._needsInit = false;
   }
 
   // The config
@@ -152,17 +164,22 @@ class HaEnergyEntityCard extends LitElement {
         return (entity.state && entity.attributes && entity.attributes.device_class === 'energy'); 
       }  
     );
-
+    // Sample config
     return {
       type: 'custom:energy-entity-card',
-      name: hass.states[sampleEntity].atttributes?.friendly_name,
+      name: hass.states[sampleEntity].attributes?.friendly_name,
       entity: sampleEntity
     };
   }
 
   // Render the card
   render() {
-   return html`
+    // Run init if needed.
+    if (this._needsInit) {
+      this.init();
+    }
+
+    return html`
       <ha-card @click=${this.onClick}>
         <div class="container">
           <span class="heading">${this.config.name}</span>
@@ -221,21 +238,23 @@ class HaEnergyEntityCard extends LitElement {
         flex-direction: column;
         display: flex;
         padding: 12px;
+        cusor: pointer;
       }
       .heading {
         font-weight:500;
         text-overflow: ellipsis;
-        line-height 20px;
+        line-height: 20px;
       }
       .value {
         font-size: 12px;
-        line-height 16px;
+        line-height: 16px;
       }
     `;
   }
 
   // Cleanup
   disconnectedCallback() {
+    this._needsInit = true;
     if (this.dateRange) this.dateRange.disconnect();
     super.disconnectedCallback();
   }
@@ -245,7 +264,7 @@ class HaEnergyEntityCard extends LitElement {
 if (!customElements.get("energy-entity-card")) {
   customElements.define("energy-entity-card", HaEnergyEntityCard);
   console.info(
-    `%c 🐸 thybag/ha-energy-entity-card %c v0.1 `,
+    `%c 🐸 thybag/ha-energy-entity-card %c v0.2 `,
     'color: green; font-weight: bold;background: black;',
     'background: grey; font-weight: bold; color: #fff'
   )
