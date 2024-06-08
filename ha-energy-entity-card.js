@@ -270,7 +270,7 @@ if (!customElements.get("energy-entity-card")) {
 // Register card itself
 window.customCards.push({
     name: 'Energy Entity Card',
-    description: 'An energy entity card that integrates with the `energy-date-selection`',
+    description: 'An simple energy entity card that integrates with the `energy-date-selection`',
     type: 'energy-entity-card',
     preview: false,
     documentationURL: `https://github.com/thybag/ha-energy-entity-card`,
