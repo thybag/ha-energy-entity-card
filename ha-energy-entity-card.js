@@ -110,7 +110,7 @@ class HaEnergyEntityCard extends LitElement {
   dateRange;
   value = null;
   units;
-
+  // Run init
   _needsInit = true;
 
   // Props
@@ -121,12 +121,9 @@ class HaEnergyEntityCard extends LitElement {
     };
   }
 
-  // On connect setup listener & default values
-  connectedCallback() {
-    super.connectedCallback();
-  }
-
+  // Setup connection with time range and entity history
   init() {
+
     // HA not ready yet, wait until next render loop
     if (!this.hass){
       return;
@@ -156,6 +153,7 @@ class HaEnergyEntityCard extends LitElement {
   setConfig(config) {
     this.config = new EnergyEntityCardConfig(config);    
   }
+
   static getStubConfig(hass) {
     // Find a power entity for default
     const sampleEntity = Object.keys(hass.states).find(
@@ -213,8 +211,7 @@ class HaEnergyEntityCard extends LitElement {
       // Replace value with new one
       const value = Object.values(results[this.config.entityId]).reduce((a, b) => a + b.change, 0);
       this.value = new Intl.NumberFormat().format(value);
-    })
-    ;
+    });
   }
 
   // Card clicked
@@ -264,7 +261,7 @@ class HaEnergyEntityCard extends LitElement {
 if (!customElements.get("energy-entity-card")) {
   customElements.define("energy-entity-card", HaEnergyEntityCard);
   console.info(
-    `%c 🐸 thybag/ha-energy-entity-card %c v0.2 `,
+    `%c 🐸 thybag/ha-energy-entity-card %c v0.0.3 `,
     'color: green; font-weight: bold;background: black;',
     'background: grey; font-weight: bold; color: #fff'
   )
@@ -273,7 +270,7 @@ if (!customElements.get("energy-entity-card")) {
 // Register card itself
 window.customCards.push({
     name: 'Energy Entity Card',
-    description: 'An energy entity card that integrates with the `energy-date-selection`',
+    description: 'An simple energy entity card that integrates with the `energy-date-selection`',
     type: 'energy-entity-card',
     preview: false,
     documentationURL: `https://github.com/thybag/ha-energy-entity-card`,

@@ -1,6 +1,9 @@
 # Home Assistant Energy Entity Card
 
-A simple entity card that connects with `energy-date-selection`.
+A simple energy entity card for Home Assistant that connects with `energy-date-selection`.
+Use with other energy components to create your own bespoke energy dashboards.
+
+![An example of the custom:map-card](cards.jpg)
 
 ## Basic setup
 
