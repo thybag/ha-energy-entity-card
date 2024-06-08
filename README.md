@@ -5,7 +5,7 @@ A simple entity card that connects with `energy-date-selection`.
 ## Basic setup
 
 Ensure the  `energy-date-selection` is added to the page. This can be added as a "Manual" card from the add card menu with the content `type: energy-date-selection`.
-You can then add `custom:energy-entity-card`'s to the page.
+You can then add as many `custom:energy-entity-card`'s to the page as your would like.
 
 While designed for the energy dashboard, this card also works with any other entities that use home assistants long time history.
 

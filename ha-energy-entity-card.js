@@ -220,15 +220,16 @@ class HaEnergyEntityCard extends LitElement {
       .container {
         flex-direction: column;
         display: flex;
-        padding: 1rem;
+        padding: 12px;
       }
       .heading {
         font-weight:500;
         text-overflow: ellipsis;
-        line-height 20px
+        line-height 20px;
       }
       .value {
         font-size: 12px;
+        line-height 16px;
       }
     `;
   }
