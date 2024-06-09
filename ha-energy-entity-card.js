@@ -110,34 +110,33 @@ class HaEnergyEntityCard extends LitElement {
   dateRange;
   value = null;
   units;
-  // Run init
+
+  // Does card need init?
   _needsInit = true;
 
   // Props
   static get properties() {
     return {
-      hass: {},
-      config: {}
+      hass: { attribute: false },
+      config: { attribute: false }
     };
   }
 
-  // Setup connection with time range and entity history
   init() {
-
     // HA not ready yet, wait until next render loop
     if (!this.hass){
       return;
     }
 
     // Bad entity?
-    if (!this.hass.states[this.config.entityId]) {
-      this.value = `Unkown enitity "${this.config.entityId}"`;
+    if (!this.hass.states[this.cardConfig.entityId]) {
+      this.value = `Unkown enitity "${this.cardConfig.entityId}"`;
       return;
     }
 
     // Default value to current state
-    this.value = this.hass.states[this.config.entityId].state;
-    this.units = this.config.units ?? this.hass.states[this.config.entityId]?.attributes?.unit_of_measurement ?? '';
+    this.value = this.hass.states[this.cardConfig.entityId].state;
+    this.units = this.cardConfig.units ?? this.hass.states[this.cardConfig.entityId]?.attributes?.unit_of_measurement ?? '';
 
     // Connect to date range
     this.dateRange = new HaDateRangeService(this.hass);
@@ -151,7 +150,10 @@ class HaEnergyEntityCard extends LitElement {
 
   // The config
   setConfig(config) {
-    this.config = new EnergyEntityCardConfig(config);    
+    // Setting config to an entity config breaks card_mod
+    // See
+    this.config = config;
+    this.cardConfig = new EnergyEntityCardConfig(config);
   }
 
   static getStubConfig(hass) {
@@ -180,7 +182,7 @@ class HaEnergyEntityCard extends LitElement {
     return html`
       <ha-card @click=${this.onClick}>
         <div class="container">
-          <span class="heading">${this.config.name}</span>
+          <span class="heading">${this.cardConfig.name}</span>
           <span class="value">${this.value} ${this.units}</span>
         </div>
       </ha-card>
@@ -197,19 +199,19 @@ class HaEnergyEntityCard extends LitElement {
       type: "recorder/statistics_during_period",
       start_time: start.toISOString(),
       end_time: end?.toISOString(),
-      statistic_ids: [this.config.entityId],
+      statistic_ids: [this.cardConfig.entityId],
       period: period,
       types: ["change"],
     })
     .then((results) => {
       // No results? Normally this means the future or a date you have no data for, so just 0
-      if (!results[this.config.entityId]) {
+      if (!results[this.cardConfig.entityId]) {
         this.value = 0;
         return;
       }
 
       // Replace value with new one
-      const value = Object.values(results[this.config.entityId]).reduce((a, b) => a + b.change, 0);
+      const value = Object.values(results[this.cardConfig.entityId]).reduce((a, b) => a + b.change, 0);
       this.value = new Intl.NumberFormat().format(value);
     });
   }
@@ -218,7 +220,7 @@ class HaEnergyEntityCard extends LitElement {
   onClick(ev) {
     // Open HA modal.
     const actions = {
-        entity: this.config.entityId,
+        entity: this.cardConfig.entityId,
         tap_action: {
            action: "more-info",
         }
@@ -261,7 +263,7 @@ class HaEnergyEntityCard extends LitElement {
 if (!customElements.get("energy-entity-card")) {
   customElements.define("energy-entity-card", HaEnergyEntityCard);
   console.info(
-    `%c 🐸 thybag/ha-energy-entity-card %c v0.0.3 `,
+    `%c 🐸 thybag/ha-energy-entity-card %c v0.0.4 `,
     'color: green; font-weight: bold;background: black;',
     'background: grey; font-weight: bold; color: #fff'
   )
@@ -270,7 +272,7 @@ if (!customElements.get("energy-entity-card")) {
 // Register card itself
 window.customCards.push({
     name: 'Energy Entity Card',
-    description: 'An simple energy entity card that integrates with the `energy-date-selection`',
+    description: 'A simple energy entity card that integrates with the `energy-date-selection`',
     type: 'energy-entity-card',
     preview: false,
     documentationURL: `https://github.com/thybag/ha-energy-entity-card`,
