@@ -237,7 +237,7 @@ class HaEnergyEntityCard extends LitElement {
         flex-direction: column;
         display: flex;
         padding: 12px;
-        cusor: pointer;
+        cursor: pointer;
       }
       .heading {
         font-weight:500;
