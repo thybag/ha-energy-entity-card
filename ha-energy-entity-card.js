@@ -52,11 +52,17 @@ class HaDateRangeService {
   getEnergyDataCollectionPoll(complete)
   {
       let energyCollection = null;
-      // Has HA inited collection
+      // Has HA inited collection?
       if (this.hass.connection['_energy']) {
-        energyCollection =  this.hass.connection['_energy'];
+        energyCollection = this.hass.connection['_energy'];
+      } else {
+        // v2026.4 introduced a new key name - try that
+        const panelKey = "_energy_" + this.hass.panelUrl;
+        if (this.hass.connection[panelKey]) {
+          energyCollection = this.hass.connection[panelKey];
+        }
       }
-       
+      
       if (energyCollection) {
         complete(energyCollection);
       } else if (Date.now() - this.pollStartAt > this.TIMEOUT) {
